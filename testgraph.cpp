@@ -45,7 +45,7 @@ void testgraph() {
     h2->AddBinContent(11, 11, 20);
     cout << global << endl; */
 
-    //SetBinContent est différent de AddBinContent
+    //SetBinContent est différent de AddBinContent , add = incrémente
 
     // 4. Draw the histogram
     // "COLZ" option draws a color plot with a color palette on the right side
