@@ -3,11 +3,15 @@
 #include "TStyle.h"
 #include "TRandom.h"
 #include <tuple>
+#include <iostream>
+using namespace std;
 
 void testgraph() {
     TCanvas* c = new TCanvas("c", "TH2D Graph Example", 1200, 800);
     
-    tuple<int, int> taille(80, 80); // nombre de bins en x et y
+    tuple<int, int> taille(81, 81); // nombre de bins en x et y; NOMBRES IMPAIRS!!!
+
+    tuple<int, int> centre((get<0>(taille)/2)+1, (get<1>(taille)/2)+1); //prend la moitie de x et y, et ajoute 1 pour etre au milieu
 
     // Arguments: name, title (with axis titles), nbinsX, xmin, xmax, nbinsY, ymin, ymax
     TH2D *h2 = new TH2D("h2", "Example TH2D Graph;X Axis [units];Y Axis [units];Z Axis [counts]", get<0>(taille), -5, 5, get<1>(taille), -5, 5);
@@ -38,7 +42,7 @@ void testgraph() {
     } 
 
 
-
+    h2->SetBinContent(get<0>(centre), get<0>(centre), 25);
 
 /*     int global = h2->FindBin(10, 10);
     h2->AddBinContent(10, 10, 15);
