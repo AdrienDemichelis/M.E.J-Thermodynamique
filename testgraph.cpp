@@ -19,17 +19,23 @@ void testgraph() {
 
     // 3. Fill the histogram with some data
     TRandom *r = new TRandom();
-    for (int i = 0; i < 100; i++) {
-        double x = r->Gaus(0, 2); // moyenne 0, ecart type 2
-        double y = r->Gaus(0, 2);
+/*     for (int i = 0; i < 10000000; i++) {
+        double x = r->Gaus(0, 1.5); // moyenne 0, ecart type 1.5
+        double y = r->Gaus(0, 1.5); // moyenne 0, ecart type 1.5
         h2->Fill(x, y, 1); // incrémente la bin(x, y) de 1 en hauteur ou z
     
-    } 
+    }  */
 
+
+    while (h2->GetBinContent(get<0>(centre), get<1>(centre)) < 1) {
+        double x = r->Gaus(0, 1.5); // moyenne 0, ecart type 1.5
+        double y = r->Gaus(0, 1.5); // moyenne 0, ecart type 1.5
+        h2->Fill(x, y, 0.0001); // incrémente la bin(x, y) de 1 en hauteur ou z
+    }
 // on peut utiliser Int_t et Double_t c'est pareil que int et double
 
 
-    for (int x = 1; x <= 80; x++) {
+    /* for (int x = 1; x <= 80; x++) {
         for (int y = 1; y <= 80; y++) {
             if (x < 40 && y < 40) {
                 h2->SetBinContent(x, y, 5); 
@@ -39,10 +45,10 @@ void testgraph() {
                 h2->SetBinContent(x, y, 0); 
             }
         }
-    } 
+    } */ 
 
 
-    h2->SetBinContent(get<0>(centre), get<0>(centre), 25);
+    //h2->SetBinContent(get<0>(centre), get<0>(centre), 25);
 
 /*     int global = h2->FindBin(10, 10);
     h2->AddBinContent(10, 10, 15);
