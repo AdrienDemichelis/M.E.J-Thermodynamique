@@ -2,75 +2,82 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TRandom.h"
+#include "TImage.h"
 #include <tuple>
 #include <iostream>
 using namespace std;
 
+
+
 void testgraph() {
     TCanvas* c = new TCanvas("c", "TH2D Graph Example", 1200, 800);
     TImage *img = TImage::Create();
-    tuple<int, int> taille(41, 41); // nombre de bins en x et y; NOMBRES IMPAIRS!!!
+    tuple<int, int> taille(61, 61); // nombre de bins en x et y; NOMBRES IMPAIRS!!!
 
     tuple<int, int> centre((get<0>(taille)/2)+1, (get<1>(taille)/2)+1); //prend la moitie de x et y, et ajoute 1 pour etre au milieu
 
     // Arguments: name, title (with axis titles), nbinsX, xmin, xmax, nbinsY, ymin, ymax
-    TH2D *h2 = new TH2D("h2", "Example TH2D Graph;X Axis [units];Y Axis [units];Z Axis [counts]", get<0>(taille), -5, 5, get<1>(taille), -5, 5);
+    TH2D *h2 = new TH2D("h2", "Example TH2D Graph;X Axis [units];Y Axis [units];Z Axis [counts]", get<0>(taille), -4, 4, get<1>(taille), -4, 4);
 
 
-    // 3. Fill the histogram with some data
-    TRandom *r = new TRandom();
-/*     for (int i = 0; i < 10000000; i++) {
-        double x = r->Gaus(0, 1.5); // moyenne 0, ecart type 1.5
-        double y = r->Gaus(0, 1.5); // moyenne 0, ecart type 1.5
-        h2->Fill(x, y, 1); // incrémente la bin(x, y) de 1 en hauteur ou z
+
+    h2->SetBinContent(get<0>(taille)/2 + 1, get<1>(taille)/2 + 1, 1); // initialise la valeur du centre à 1
     
-    }  */
-
-    double grille[81][81] = {0}; // initialise un tableau 2D de 81x81 avec des zéros
+    double grille[81][81] = {}; //tableau des valeurs de h2 au temps t-1, h2 étant au temps t
 
 
-    auto change_z = [&](int x, int y) {
-        if ()
-        double z =  (grille[x-1][y] + grille[x+1][y] + grille[x][y-1] + grille[x][y+1]) - 4*grille[x][y];
-    
-        h2->SetBinContent(x, y, z);
-        grille[x][y] = z; // stocke la nouvelle valeur de z dans le tableau 2D
-    };
 
-    
-    h2->SetBinContent(21, 21, 50);
+    for (int i = 0; i <= 1000; i++) { // nombre d'itérations pour faire évoluer h2
+        
+        //mettre à jour la grille avec les valeurs de h2
+        for (int x = 0; x < get<0>(taille); x++) {
+            for (int y = 0; y < get<1>(taille); y++) {
+                grille[x][y] = h2->GetBinContent(x, y);
+        }
+    }
 
-    for (int i = 0; i <= 10; i++) {
-
-        for (int x = 0; x<=get<0>(taille); x++) {
-            for (int y = 0; y<=get<1>(taille); y++) {
-                change_z(x, y);
-
+        // Mettre à jour les valeurs de h2 en fonction de la moyenne des voisins dans la grille (d'avant, au temps t-1)
+        for (int x = 1; x <=get<0>(taille); x++) {  
+            for (int y = 1; y <= get<1>(taille); y++) {
+                if (x != get<0>(taille)/2 + 1 || y != get<1>(taille)/2 + 1) {// ne pas mettre à jour la valeur du centre
+                    h2->SetBinContent(x, y, ((grille[x-1][y] + grille[x+1][y] + grille[x][y-1] + grille[x][y+1]) / 4.0));
                 }
             }
+        }
+
+
+
 
         h2->Draw("LEGO");
-        c->Update();
+        c->Update(); // Met à jour le canvas pour afficher les changements
+        //c->SaveAs(Form("frame_%02d.png", i)); // Sauvegarde chaque frame
     }
 
 
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //h2->Draw("LEGO");
+    //c->Update(); 
+    cout << "z au centre: " << grille[get<0>(taille)/2 + 1][get<1>(taille)/2 + 1] << endl;
 
 // on peut utiliser Int_t et Double_t c'est pareil que int et double
 
 
-    /* for (int x = 1; x <= 80; x++) {
-        for (int y = 1; y <= 80; y++) {
-            if (x < 40 && y < 40) {
-                h2->SetBinContent(x, y, 5); 
-            } else if (x >= 40 && y >= 40) {
-                h2->SetBinContent(x, y, 10); 
-            } else {
-                h2->SetBinContent(x, y, 0); 
-            }
-        }
-    } */ 
+
 
 
 
