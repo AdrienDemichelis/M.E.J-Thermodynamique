@@ -13,7 +13,7 @@ using namespace std;
 void testgraph() {
     static TCanvas* c = new TCanvas("c1", "TH2D", 1200, 800);
     TImage *img = TImage::Create();
-    tuple<int, int> taille(61, 61); // nombre de bins en x et y; NOMBRES IMPAIRS!!!
+    tuple<int, int> taille(51, 51); // nombre de bins en x et y; NOMBRES IMPAIRS!!!
 
     tuple<int, int> centre((get<0>(taille)/2)+1, (get<1>(taille)/2)+1); //prend la moitie de x et y, et ajoute 1 pour etre au milieu
 
@@ -40,11 +40,12 @@ void testgraph() {
     }
 
     
-    this_thread::sleep_for(chrono::milliseconds(65)); // pause de 3 secondes avant de commencer l'évolution pour voir le point de départ
+    this_thread::sleep_for(chrono::milliseconds(10)); // pause de 3 secondes avant de commencer l'évolution pour voir le point de départ
     
-    h2->SetBinContent(get<0>(taille)/2 + 1, get<1>(taille)/2 + 1, 1); // initialise la valeur du centre à 1 dans h2 aussi (temps t)
+    grille[get<0>(taille)/2][get<1>(taille)/2] = 1; // On dit que le centre est toujours éguale a 1
+    h2->SetBinContent(get<0>(taille)/2 + 1, get<1>(taille)/2 + 1, 1);
 
-    double diffusionCoefficient = 0.2; // coefficient de diffusion pour faire évoluer h2
+    double diffusionCoefficient = 0.99; // coefficient de diffusion pour faire évoluer h2
 
     int pas = 0;
 
@@ -54,7 +55,7 @@ void testgraph() {
         //mettre à jour la grille avec les valeurs de h2
         for (int x = 1; x <= get<0>(taille); x++) {
             for (int y = 1; y <= get<1>(taille); y++) {
-                grille[x-1][y-1] = h2->GetBinContent(x, y);
+                grille[x-1][y-1] = (double) h2->GetBinContent(x, y);
             }
         }
 
@@ -96,13 +97,9 @@ void testgraph() {
         //if ((pas / 200) % 2 == 0) {valeurCentre = 1.0;} else {valeurCentre = lowerLimit;}
         
 
-        grille[get<0>(taille)/2][get<1>(taille)/2] = 1; // On dit que le centre est toujours éguale a 1
-        h2->SetBinContent(get<0>(taille)/2 + 1, get<1>(taille)/2 + 1, 1);
-
-        h2->Draw("LEGO");
+        h2->Draw("LEGO2");
         gPad->SetLogz(); // Met l'échelle de l'axe z en échelle logarithmique
         c->Update(); // Met à jour le canvas pour afficher les changements
-        h2->Draw("LEGO");
         gSystem->ProcessEvents(); // l'animation fait que on peut pas intéragir de base donc j'ai mis ca
         //c->SaveAs(Form("frame_%02d.png", i)); // Sauvegarde chaque frame
     //}
